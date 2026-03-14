@@ -7,6 +7,7 @@ enum class AppMode {
     SNAKE,
     FLAPPY,
     RAINBOW,
+    SETTINGS,
 };
 
 // Blocks until the user selects an item, then returns the chosen mode.

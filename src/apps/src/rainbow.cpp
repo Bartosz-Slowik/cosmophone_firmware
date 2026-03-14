@@ -39,7 +39,7 @@ void run() {
         extPal[i] = extPal[i + 480] = hsv565(i * 360 / 480);
     }
 
-    uint16_t *fb   = sys::display::getFramebuffer();
+    uint16_t *fb   = sys::display::getDirectFramebuffer();
     int       offs = 0;
     bool      prev = false;
 
@@ -48,7 +48,7 @@ void run() {
         for (int y = 0; y < H; y++) {
             memcpy(fb + y * W, row, W * 2);
         }
-        sys::display::flushFramebuffer();
+        sys::display::flushDirect();
         if (++offs >= 480) offs = 0;
     }
 }

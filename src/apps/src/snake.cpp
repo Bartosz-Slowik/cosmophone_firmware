@@ -115,23 +115,42 @@ static bool showGameOver() {
     gfx->setCursor(OX + 30, OY + 62);
     gfx->printf("Score: %d   Best: %d", score, bestScore);
 
-    // Buttons
     const int BW = 140, BH = 44, BY = OY + OH - BH - 10;
-    gfx->fillRoundRect(OX + 10,         BY, BW, BH, 8, 0x0400);
-    gfx->fillRoundRect(OX + OW - BW - 10, BY, BW, BH, 8, 0x0019);
-    gfx->setTextSize(2);
-    gfx->setTextColor(C_TEXT);
-    gfx->setCursor(OX + 28,           BY + 12); gfx->print("PLAY AGAIN");
-    gfx->setCursor(OX + OW - BW + 22, BY + 12); gfx->print("MENU");
+    const int BX1 = OX + 10;
+    const int BX2 = OX + OW - BW - 10;
+    const uint16_t C_PLAY = 0x0400, C_PLAY_HL = 0x07E0;
+    const uint16_t C_MENU = 0x0019, C_MENU_HL = 0x07FF;
 
+    auto drawBtns = [&](int hl) {
+        gfx->fillRoundRect(BX1, BY, BW, BH, 8, hl == 0 ? C_PLAY_HL : C_PLAY);
+        gfx->fillRoundRect(BX2, BY, BW, BH, 8, hl == 1 ? C_MENU_HL : C_MENU);
+        gfx->setTextSize(2);
+        gfx->setTextColor(C_TEXT);
+        gfx->setCursor(BX1 + 8,  BY + 12); gfx->print("PLAY AGAIN");
+        gfx->setCursor(BX2 + 30, BY + 12); gfx->print("MENU");
+    };
+    drawBtns(-1);
+    sys::display::flush();
+
+    int hlBtn = -1;
     while (true) {
         int tx, ty;
-        if (!sys::touch::getTouch(tx, ty)) { delay(10); continue; }
-        if (tx >= OX + 10 && tx < OX + 10 + BW &&
-            ty >= BY       && ty < BY + BH) return true;   // restart
-        if (tx >= OX + OW - BW - 10 && tx < OX + OW - 10 &&
-            ty >= BY                 && ty < BY + BH) return false; // menu
-        delay(10);
+        if (sys::touch::getTouch(tx, ty)) {
+            int cur = -1;
+            if (ty >= BY && ty < BY + BH) {
+                if (tx >= BX1 && tx < BX1 + BW) cur = 0;
+                else if (tx >= BX2 && tx < BX2 + BW) cur = 1;
+            }
+            if (cur != hlBtn) { hlBtn = cur; drawBtns(hlBtn); sys::display::flush(); }
+            delay(10); continue;
+        }
+        int rx, ry;
+        if (!sys::touch::getReleased(rx, ry)) { delay(10); continue; }
+        if (hlBtn >= 0) { drawBtns(-1); sys::display::flush(); hlBtn = -1; }
+        if (ry >= BY && ry < BY + BH) {
+            if (rx >= BX1 && rx < BX1 + BW) return true;
+            if (rx >= BX2 && rx < BX2 + BW) return false;
+        }
     }
 }
 

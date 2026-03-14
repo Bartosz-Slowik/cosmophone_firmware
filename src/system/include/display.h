@@ -6,25 +6,31 @@ namespace display {
 
 void init();
 
-// ── Direct framebuffer access (used by full-screen demos) ────────────────────
-// Layout: fb[y * 480 + x] = RGB565 pixel.
-// After a bulk write call flushFramebuffer() to make the DMA engine
-// see the updated data (flushes CPU D-cache → PSRAM).
-uint16_t *getFramebuffer();
-void      flushFramebuffer();
+// ── Buffered rendering (used everywhere) ─────────────────────────────────────
+// All gfx draw calls write to an offscreen backbuffer.
+// Call flush() to push only the changed rows to the visible display.
+// This prevents partial-draw flashing.
+void flush();
 
-// ── Double-buffer / diff-flush (used by games) ────────────────────────────────
-// Call beginFrame() before any gfx draw calls for one logical frame.
-// All gfx-library writes are silently redirected to a PSRAM back buffer.
-// Call endFrame() when the frame is complete: it compares the back
-// buffer against the display framebuffer row-by-row, copies only rows that
-// changed, flushes the CPU D-cache to PSRAM in contiguous batches, then
-// restores gfx to the real display framebuffer.
+// Standard back button (top-left). Draw it, then use backButtonTapped(tx, ty) in your touch loop.
+void drawBackButton(uint16_t bg = 0x2145, uint16_t border = 0x07FF, uint16_t textColor = 0xFFFF);
+bool backButtonTapped(int tx, int ty);
+
+// ── Direct framebuffer access (used by raw pixel demos like rainbow) ─────────
+// Returns the visible display framebuffer for direct pixel writes.
+// After writing, call flushDirect() to make the DMA see updated data.
+uint16_t *getDirectFramebuffer();
+void      flushDirect();
+
+// ── Game helpers (convenience wrappers) ──────────────────────────────────────
+// beginFrame/endFrame are kept for backward compat with game code.
+// beginFrame() is a no-op (gfx already draws to backbuffer).
+// endFrame() just calls flush().
 void beginFrame();
 void endFrame();
 
 }  // namespace display
 }  // namespace sys
 
-// Convenience: global gfx pointer for drawing (points to display::gfx).
+// Convenience: global gfx pointer for drawing.
 extern Arduino_GFX *gfx;

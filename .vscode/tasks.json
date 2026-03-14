@@ -2,9 +2,16 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "Build",
+            "type": "shell",
+            "command": "${env:USERPROFILE}\\.platformio\\penv\\Scripts\\platformio.exe run --environment esp32s3; if ($LASTEXITCODE -eq 0) { ${env:USERPROFILE}\\.platformio\\penv\\Scripts\\platformio.exe run -t compiledb --environment esp32s3 }",
+            "group": { "kind": "build", "isDefault": true },
+            "presentation": { "reveal": "always" }
+        },
+        {
             "label": "Generate compile_commands.json",
             "type": "shell",
-            "command": "platformio",
+            "command": "${env:USERPROFILE}\\.platformio\\penv\\Scripts\\platformio.exe",
             "args": ["run", "-t", "compiledb", "--environment", "esp32s3"],
             "group": "none",
             "presentation": { "reveal": "silent" }

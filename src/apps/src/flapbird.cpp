@@ -209,23 +209,39 @@ static bool showGameOver() {
     int by  = OY + OH - BH - 14;
     int bx1 = OX + 10;
     int bx2 = OX + OW - BW - 10;
-    gfx->fillRoundRect(bx1, by, BW, BH, 8, 0x0400);
-    gfx->fillRoundRect(bx2, by, BW, BH, 8, 0x0019);
-    gfx->setTextSize(2);
-    gfx->setTextColor(C_TEXT);
-    gfx->setCursor(bx1 + 8,  by + 12); gfx->print("PLAY AGAIN");
-    gfx->setCursor(bx2 + 30, by + 12); gfx->print("MENU");
+    const uint16_t C_PLAY = 0x0400, C_PLAY_HL = 0x07E0;
+    const uint16_t C_MENU = 0x0019, C_MENU_HL = 0x07FF;
 
-    bool prevTouched = false;
+    auto drawBtns = [&](int hl) {
+        gfx->fillRoundRect(bx1, by, BW, BH, 8, hl == 0 ? C_PLAY_HL : C_PLAY);
+        gfx->fillRoundRect(bx2, by, BW, BH, 8, hl == 1 ? C_MENU_HL : C_MENU);
+        gfx->setTextSize(2);
+        gfx->setTextColor(C_TEXT);
+        gfx->setCursor(bx1 + 8,  by + 12); gfx->print("PLAY AGAIN");
+        gfx->setCursor(bx2 + 30, by + 12); gfx->print("MENU");
+    };
+    drawBtns(-1);
+    sys::display::flush();
+
+    int hlBtn = -1;
     while (true) {
         int tx, ty;
-        bool touched = sys::touch::getTouch(tx, ty);
-        if (touched && !prevTouched) {
-            if (tx >= bx1 && tx < bx1 + BW && ty >= by && ty < by + BH) return true;
-            if (tx >= bx2 && tx < bx2 + BW && ty >= by && ty < by + BH) return false;
+        if (sys::touch::getTouch(tx, ty)) {
+            int cur = -1;
+            if (ty >= by && ty < by + BH) {
+                if (tx >= bx1 && tx < bx1 + BW) cur = 0;
+                else if (tx >= bx2 && tx < bx2 + BW) cur = 1;
+            }
+            if (cur != hlBtn) { hlBtn = cur; drawBtns(hlBtn); sys::display::flush(); }
+            delay(10); continue;
         }
-        prevTouched = touched;
-        delay(10);
+        int rx, ry;
+        if (!sys::touch::getReleased(rx, ry)) { delay(10); continue; }
+        if (hlBtn >= 0) { drawBtns(-1); sys::display::flush(); hlBtn = -1; }
+        if (ry >= by && ry < by + BH) {
+            if (rx >= bx1 && rx < bx1 + BW) return true;
+            if (rx >= bx2 && rx < bx2 + BW) return false;
+        }
     }
 }
 
