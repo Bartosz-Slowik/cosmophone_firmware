@@ -1,7 +1,0 @@
-{
-  "name": "Arduino_GFX",
-  "version": "1.2.9",
-  "build": {
-    "includeDir": "src"
-  }
-}

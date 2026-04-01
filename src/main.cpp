@@ -1,24 +1,20 @@
 #include <Arduino.h>
-#include "display.h"
-#include "touch.h"
-#include "menu.h"
-#include "wifi_settings.h"
-#include "snake.h"
-#include "flapbird.h"
-#include "rainbow.h"
+#include "system/display.h"
+#include "system/touch.h"
+#include "system/menu.h"
+#include "apps/rainbow/rainbow.h"
 
 void setup() {
-    Serial.begin(115200);
+    Serial0.begin(115200);
     sys::display::init();
     sys::touch::init();
 }
 
 void loop() {
     using namespace sys::menu;
-    switch (showMenu()) {
-        case AppMode::SNAKE:    apps::snake::run();         break;
-        case AppMode::FLAPPY:   apps::flapbird::run();      break;
-        case AppMode::RAINBOW:  apps::rainbow::run();       break;
-        case AppMode::SETTINGS: sys::wifi_settings::run();  break;
+    AppMode selectedMode = showMenu();
+    switch (selectedMode) {
+        case AppMode::RAINBOW: apps::rainbow::run(); break;
+        default: break;
     }
 }
