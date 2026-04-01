@@ -1,8 +1,0 @@
-{
-    "C_Cpp.intelliSenseEngine": "disabled",
-    "clangd.arguments": [
-        "--background-index",
-        "--clang-tidy",
-        "--query-driver=${env:USERPROFILE}/.platformio/packages/toolchain-xtensa-esp32s3/bin/xtensa-esp32s3-elf-*"
-    ]
-}
