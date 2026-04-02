@@ -4,6 +4,7 @@ namespace sys {
 namespace menu {
 
 enum class AppMode {
+    SKETCH,
     RAINBOW,
 };
 

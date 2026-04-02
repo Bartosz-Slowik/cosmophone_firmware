@@ -4,6 +4,7 @@
 #include "system/userconfig.h"
 #include "system/touch.h"
 #include "system/menu.h"
+#include "apps/sketch/sketch.h"
 #include "apps/rainbow/rainbow.h"
 
 void setup() {
@@ -21,6 +22,7 @@ void loop() {
     using namespace sys::menu;
     AppMode selectedMode = showMenu();
     switch (selectedMode) {
+        case AppMode::SKETCH: apps::sketch::run(); break;
         case AppMode::RAINBOW: apps::rainbow::run(); break;
         default: break;
     }

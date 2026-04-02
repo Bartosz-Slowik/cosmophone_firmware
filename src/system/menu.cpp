@@ -26,6 +26,7 @@ constexpr uint16_t M_TEXT    = 0xFFFF;  // white
 // -- Menu item descriptor ------------------------------------------------------
 
 static const MenuItem ITEMS[] = {
+    { "SKETCH",      "Finger drawing pad",      0x07FF, AppMode::SKETCH    },
     { "RAINBOW",     "Scrolling rainbow demo",   0xF81F, AppMode::RAINBOW   },
 };
 constexpr int N_ITEMS = sizeof(ITEMS) / sizeof(ITEMS[0]);
