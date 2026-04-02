@@ -1,11 +1,18 @@
 #include <Arduino.h>
 #include "system/display.h"
+#include "system/fs.h"
+#include "system/userconfig.h"
 #include "system/touch.h"
 #include "system/menu.h"
 #include "apps/rainbow/rainbow.h"
 
 void setup() {
     Serial0.begin(115200);
+    Serial0.println(F("CosmoPhone: setup start"));
+    Serial0.flush();
+    
+    sys::fs::init(true);
+    sys::userconfig::init();
     sys::display::init();
     sys::touch::init();
 }
