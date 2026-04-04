@@ -91,6 +91,7 @@ void flushDirect() {
 
 void flush() {
     gfx->flush();
+    flushDirect();
 }
 
 }  // namespace display
